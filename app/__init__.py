@@ -1,16 +1,21 @@
 from flask import Flask
-import os
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
-def create_app():
-    template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
-    static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static'))
-    
-    app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
+db = SQLAlchemy()
+migrate = Migrate()
 
-    from .main import main as main_blueprint
-    from .inbox import inbox as inbox_blueprint
+def create_app(config_class='config.Config'):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
-    app.register_blueprint(main_blueprint)
-    app.register_blueprint(inbox_blueprint)
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    from app.main import main as main_bp
+    app.register_blueprint(main_bp)
+
+    from app.inbox import inbox as inbox_bp
+    app.register_blueprint(inbox_bp)
 
     return app
