@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox</title>
+</head>
+<body>
+    <h1>Inbox</h1>
+    <form method="POST">
+        <input type="text" name="message" placeholder="Add a message">
+        <button type="submit">Add</button>
+    </form>
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
