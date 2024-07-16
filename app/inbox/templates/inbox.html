@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/inbox_styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('inbox.static', filename='css/inbox_style.css') }}">
 </head>
 <body>
     <div class="sidebar">
@@ -24,7 +24,7 @@
         <ul class="list-group mt-3">
             {% for message in messages %}
                 <li class="list-group-item">
-                    {{ message }}
+                    {{ message.content }}
                     <button class="btn btn-danger btn-sm"><i class="fas fa-trash-alt"></i></button>
                 </li>
             {% endfor %}
