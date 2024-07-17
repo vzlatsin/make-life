@@ -6,7 +6,7 @@ import os
 db = SQLAlchemy()
 migrate = Migrate()
 
-def create_app():
+def create_app(config_class='config.Config'):
     template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'templates'))
     static_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'static'))
 
@@ -14,7 +14,6 @@ def create_app():
     print(f"Static directory: {static_dir}")  # Debug print statement
 
     app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
-    config_class = os.getenv('FLASK_CONFIG', 'config.Config')
     app.config.from_object(config_class)
 
     # Ensure 'ENV' key is in app.config and provide default value
