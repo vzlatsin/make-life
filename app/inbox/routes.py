@@ -8,7 +8,11 @@ print("Loading inbox routes...")  # Debug print statement
 @inbox.route('/', methods=['POST'])
 def add_inbox_entry():
     print("POST request received")  # Debug print statement
-    data = request.get_json()
+    if request.is_json:
+        data = request.get_json()
+    else:
+        data = request.form
+
     print(f"Received data: {data}")  # Debug print statement
     content = data.get('content')
     if content:

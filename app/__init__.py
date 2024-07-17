@@ -14,22 +14,36 @@ def create_app():
     print(f"Static directory: {static_dir}")  # Debug print statement
 
     app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
-    app.config.from_object('config.Config')  # Assuming you have a Config class in config.py
+    config_class = os.getenv('FLASK_CONFIG', 'config.Config')
+    app.config.from_object(config_class)
+
+    # Ensure 'ENV' key is in app.config and provide default value
+    env = app.config.get('ENV', 'default')
+    print(f"Loaded configuration: {config_class}")
+    print(f"Environment: {env}")
+    print(f"Database URI: {app.config['SQLALCHEMY_DATABASE_URI']}")
+
+    if config_class == 'config.PostgresConfig':
+        print("Using PostgreSQL configuration.")
+    else:
+        print("Using SQLite configuration.")
 
     # Initialize database with the app
     db.init_app(app)
+    print("Database initialized.")
     migrate.init_app(app, db)
+    print("Migration initialized.")
 
     from .main import main as main_blueprint
     from .inbox import inbox as inbox_blueprint
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(inbox_blueprint, url_prefix='/inbox')
+    print("Blueprints registered.")
 
     # Print all registered routes for debugging
-    if __name__ == "__main__":
-        print("Registered routes:")
-        for rule in app.url_map.iter_rules():
-            print(f"{rule} -> {rule.endpoint}")
+    print("Registered routes:")
+    for rule in app.url_map.iter_rules():
+        print(f"{rule} -> {rule.endpoint}")
 
     return app

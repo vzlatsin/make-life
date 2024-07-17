@@ -42,3 +42,5 @@ instance/
 
 # Environment variables
 .env
+
+config_private.py
