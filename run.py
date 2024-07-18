@@ -13,7 +13,10 @@ config_name = 'config.Config'
 if len(sys.argv) > 1:
     config_name = sys.argv[1]
 
+print(f"Command line argument for config: {config_name}")  # Diagnostic print statement
+
 config_class = config_map.get(config_name, Config)
+print(f"Using configuration class: {config_class}")  # Diagnostic print statement
 
 app = create_app(config_class)
 
