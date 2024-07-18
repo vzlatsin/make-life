@@ -1,9 +1,12 @@
-Flask 
-gunicorn 
-
+Flask
+gunicorn
 Flask-SQLAlchemy
 Flask-Migrate
-
 psycopg2-binary
 
-
+# Optional but commonly used packages
+Flask-WTF
+Flask-Login
+Flask-Bootstrap
+Flask-Mail
+Flask-CORS
