@@ -12,13 +12,14 @@ class SQLiteConfig(Config):
 
 class PostgresConfig(Config):
     """PostgreSQL configuration."""
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql://username:password@localhost/dbname')
-    # Attempt to override from config_private if available
-    try:
-        from config_private import PostgresConfig as PrivateConfig
-        SQLALCHEMY_DATABASE_URI = PrivateConfig.SQLALCHEMY_DATABASE_URI
-    except ImportError:
-        pass
+    if 'DATABASE_URL' in os.environ:
+        SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL').replace("postgres://", "postgresql://")
+    else:
+        try:
+            from config_private import PostgresConfig as PrivateConfig
+            SQLALCHEMY_DATABASE_URI = PrivateConfig.SQLALCHEMY_DATABASE_URI.replace("postgres://", "postgresql://")
+        except ImportError:
+            SQLALCHEMY_DATABASE_URI = 'postgresql://username:password@localhost/dbname'
 
 class TestConfig(Config):
     """Testing configuration."""
