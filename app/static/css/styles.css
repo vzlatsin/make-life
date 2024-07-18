@@ -1,5 +1,5 @@
 body {
-    font-family: 'Roboto', sans-serif;
+    background-color: #f0f0f0;  /* Change background color to light grey */
 }
 .sidebar {
     height: 100vh;
