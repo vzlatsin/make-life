@@ -1,11 +1,13 @@
 import sys
 from app import create_app
-from config import Config, PostgresConfig, TestConfig
+from config import Config, PostgresConfig, TestConfig, SQLiteConfig  # Include SQLiteConfig
 
+# Updated to include SQLiteConfig
 config_map = {
     'config.Config': Config,
     'config.PostgresConfig': PostgresConfig,
-    'config.TestConfig': TestConfig
+    'config.TestConfig': TestConfig,
+    'config.SQLiteConfig': SQLiteConfig  # Added SQLiteConfig
 }
 
 # Default to 'config.Config' if no configuration is provided
