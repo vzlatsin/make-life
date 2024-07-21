@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main_styles.css') }}">
 </head>
 <body>
     <div class="sidebar">
@@ -29,8 +28,22 @@
         <ul class="list-group mt-3" id="projectsList">
             {% for project in projects %}
                 <li class="list-group-item">
-                    {{ project.name }} - {{ project.description }} - {{ project.status }} - {{ project.due_date }}
+                    <strong>{{ project.name }}</strong> - {{ project.description }} - {{ project.status }} - {{ project.due_date }}
                     <button class="btn btn-danger btn-sm" onclick="deleteProject({{ project.id }})"><i class="fas fa-trash-alt"></i></button>
+                    <ul class="list-group mt-2">
+                        {% for task in project.tasks %}
+                            <li class="list-group-item">
+                                {{ task.content }}
+                                <button class="btn btn-danger btn-sm" onclick="deleteTask({{ task.id }})"><i class="fas fa-trash-alt"></i></button>
+                            </li>
+                        {% endfor %}
+                        <li class="list-group-item">
+                            <form onsubmit="addTask(event, {{ project.id }})">
+                                <input class="form-control mr-sm-2" type="text" placeholder="New Task" required>
+                                <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fas fa-plus"></i> Add</button>
+                            </form>
+                        </li>
+                    </ul>
                 </li>
             {% endfor %}
         </ul>
@@ -62,6 +75,38 @@
 
         function deleteProject(id) {
             fetch(`/projects/${id}`, {
+                method: 'DELETE',
+            }).then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    location.reload();
+                } else {
+                    alert(data.error || 'An error occurred');
+                }
+            });
+        }
+
+        function addTask(event, projectId) {
+            event.preventDefault();
+            const content = event.target.querySelector('input').value;
+            fetch('/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content: content, project_id: projectId }),
+            }).then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    location.reload();
+                } else {
+                    alert(data.error || 'An error occurred');
+                }
+            });
+        }
+
+        function deleteTask(id) {
+            fetch(`/tasks/${id}`, {
                 method: 'DELETE',
             }).then(response => response.json())
             .then(data => {

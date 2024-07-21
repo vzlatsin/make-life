@@ -1,8 +1,9 @@
 from flask import request, jsonify, render_template
 from app.projects import projects
-from app.projects.models import db, Project
+from app.projects.models import db, Project, Task
 import os
 import json
+from datetime import datetime
 
 print("Loading projects routes...")  # Debug print statement
 
@@ -25,7 +26,16 @@ def add_project():
         name = data.get('name')
         description = data.get('description')
         status = data.get('status')
-        due_date = data.get('due_date')
+        due_date_str = data.get('due_date')
+
+        if due_date_str:
+            try:
+                due_date = datetime.strptime(due_date_str, '%Y-%m-%d').date()
+            except ValueError as e:
+                print(f"Error parsing due_date: {e}")  # Debug print statement
+                return jsonify({'error': f"Error parsing due_date: {e}"}), 400
+        else:
+            due_date = None
 
         if name:
             project = Project(name=name, description=description, status=status, due_date=due_date)
@@ -45,6 +55,8 @@ def get_projects():
     try:
         print("GET request received")  # Debug print statement
         projects = Project.query.all()
+        for project in projects:
+            project.tasks = Task.query.filter_by(project_id=project.id).all()
         print(f"Projects retrieved: {[project.name for project in projects]}")  # Debug print statement
         return render_template('projects.html', projects=projects)
     except Exception as e:
