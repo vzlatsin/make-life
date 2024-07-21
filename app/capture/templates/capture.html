@@ -28,6 +28,7 @@
                 {% if not message.handled and not message.organized %}
                     <li class="list-group-item">
                         {{ message.content }}
+                        <button class="btn btn-outline-secondary btn-sm" onclick="editEntry({{ message.id }}, '{{ message.content }}')"><i class="fas fa-pencil-alt"></i></button>
                         <button class="btn btn-danger btn-sm" onclick="deleteEntry({{ message.id }})"><i class="fas fa-trash-alt"></i></button>
                         <button class="btn btn-outline-primary btn-sm" onclick="markAsHandled({{ message.id }})">Handled</button>
                         <button class="btn btn-outline-secondary btn-sm" onclick="markAsOrganized({{ message.id }})">Organized</button>
@@ -69,6 +70,26 @@
                     alert(data.error || 'An error occurred');
                 }
             });
+        }
+
+        function editEntry(id, currentContent) {
+            const newContent = prompt("Edit your entry:", currentContent);
+            if (newContent !== null) {
+                fetch(`/capture/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ content: newContent }),
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        location.reload();
+                    } else {
+                        alert(data.error || 'An error occurred');
+                    }
+                });
+            }
         }
 
         function markAsHandled(id) {
