@@ -51,6 +51,17 @@ def get_projects():
         print(f"Error retrieving projects: {e}")  # Debug print statement
         return str(e), 500
 
+@projects.route('/api', methods=['GET'])
+def get_projects_api():
+    try:
+        print("API GET request received")  # Debug print statement
+        projects = Project.query.all()
+        projects_list = [{'id': project.id, 'name': project.name, 'description': project.description, 'status': project.status, 'due_date': project.due_date} for project in projects]
+        print(f"Projects retrieved: {projects_list}")  # Debug print statement
+        return jsonify(projects_list), 200
+    except Exception as e:
+        print(f"Error retrieving projects: {e}")  # Debug print statement
+        return jsonify({'error': str(e)}), 500
 
 @projects.route('/<int:id>', methods=['DELETE'])
 def delete_project(id):

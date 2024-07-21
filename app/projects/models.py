@@ -12,4 +12,5 @@ class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(256), nullable=False)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=True)
+    # Remove the 'project' relationship defined in Task as it is already defined via the backref in Project
     # other fields...

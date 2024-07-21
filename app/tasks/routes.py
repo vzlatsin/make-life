@@ -1,13 +1,11 @@
 from flask import request, jsonify, render_template
 from app.tasks import tasks
-from app.projects.models import db, Task
+from app.projects.models import db, Task, Project
 
 import os
 import json
 
 print("Loading tasks routes...")  # Debug print statement
-
-
 
 @tasks.route('/', methods=['POST'])
 @tasks.route('', methods=['POST'])
@@ -29,7 +27,13 @@ def add_task():
         project_id = data.get('project_id')
 
         if content:
-            task = Task(content=content, project_id=project_id)
+            task = Task(content=content)
+            if project_id:
+                project = Project.query.get(project_id)
+                if not project:
+                    return jsonify({'error': 'Invalid project ID'}), 400
+                task.project_id = project_id
+
             db.session.add(task)
             db.session.commit()
             print("Task added to database")  # Debug print statement
@@ -51,7 +55,7 @@ def get_tasks():
     except Exception as e:
         print(f"Error retrieving tasks: {e}")  # Debug print statement
         return str(e), 500
-    
+
 @tasks.route('/<int:id>', methods=['DELETE'])
 def delete_task(id):
     print("DELETE request received")  # Debug print statement
