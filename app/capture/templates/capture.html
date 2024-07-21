@@ -3,27 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inbox</title>
+    <title>Capture</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <link rel="stylesheet" href="{{ url_for('inbox.static', filename='css/inbox_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('capture.static', filename='css/capture_style.css') }}">
 </head>
 <body>
     <div class="sidebar">
         <h4 class="text-center">Make-Life App</h4>
-        <a href="/inbox"><i class="fas fa-inbox"></i> Inbox</a>
+        <a href="/capture"><i class="fas fa-pencil-alt"></i> Capture</a>
         <a href="/projects"><i class="fas fa-project-diagram"></i> Projects</a> <!-- New Link to Projects -->
         <a href="/tasks"><i class="fas fa-tasks"></i> Tasks</a> <!-- New Link to Tasks -->
     </div>
     <div class="content">
-        <h1>Inbox</h1>
-        <form id="inboxForm" class="form-inline my-2 my-lg-0">
+        <h1>Capture</h1>
+        <form id="CaptureForm" class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="text" id="messageInput" placeholder="Add a message" required>
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fas fa-plus"></i> Add</button>
         </form>
-        <ul class="list-group mt-3" id="inboxList">
+        <ul class="list-group mt-3" id="captureList">
             {% for message in messages %}
                 <li class="list-group-item">
                     {{ message.content }}
@@ -35,10 +35,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
     <script>
-        document.getElementById('inboxForm').addEventListener('submit', function(event) {
+        document.getElementById('CaptureForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const content = document.getElementById('messageInput').value;
-            fetch('/inbox/', {
+            fetch('/capture/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,7 +55,7 @@
         });
 
         function deleteEntry(id) {
-            fetch(`/inbox/${id}`, {
+            fetch(`/capture/${id}`, {
                 method: 'DELETE',
             }).then(response => response.json())
             .then(data => {
