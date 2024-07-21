@@ -14,7 +14,7 @@
         <h4 class="text-center">Make-Life App</h4>
         <a href="/capture"><i class="fas fa-pencil-alt"></i> Capture</a>
         <a href="/projects"><i class="fas fa-project-diagram"></i> Projects</a>
-        <a href="/tasks"><i class="fas fa-tasks"></i> Tasks</a> <!-- New Link to Tasks -->
+        <a href="/tasks"><i class="fas fa-tasks"></i> Tasks</a>
     </div>
     <div class="content">
         <h1>Projects</h1>
@@ -28,22 +28,31 @@
         <ul class="list-group mt-3" id="projectsList">
             {% for project in projects %}
                 <li class="list-group-item">
-                    <strong>{{ project.name }}</strong> - {{ project.description }} - {{ project.status }} - {{ project.due_date }}
-                    <button class="btn btn-danger btn-sm" onclick="deleteProject({{ project.id }})"><i class="fas fa-trash-alt"></i></button>
-                    <ul class="list-group mt-2">
-                        {% for task in project.tasks %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="toggleTasks({{ project.id }})"><i class="fas fa-caret-down"></i></button>
+                            <strong>{{ project.name }}</strong> - {{ project.description }} - {{ project.status }} - {{ project.due_date }}
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProject({{ project.id }})"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                    <div class="tasks mt-2" id="tasks-{{ project.id }}" style="display: none; margin-left: 20px;">
+                        <ul class="list-group">
+                            {% for task in project.tasks %}
+                                <li class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span>{{ task.content }}</span>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteTask({{ task.id }})"><i class="fas fa-trash-alt"></i></button>
+                                    </div>
+                                </li>
+                            {% endfor %}
                             <li class="list-group-item">
-                                {{ task.content }}
-                                <button class="btn btn-danger btn-sm" onclick="deleteTask({{ task.id }})"><i class="fas fa-trash-alt"></i></button>
+                                <form onsubmit="addTask(event, {{ project.id }})">
+                                    <input class="form-control mr-sm-2" type="text" placeholder="New Task" required>
+                                    <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fas fa-plus"></i> Add</button>
+                                </form>
                             </li>
-                        {% endfor %}
-                        <li class="list-group-item">
-                            <form onsubmit="addTask(event, {{ project.id }})">
-                                <input class="form-control mr-sm-2" type="text" placeholder="New Task" required>
-                                <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><i class="fas fa-plus"></i> Add</button>
-                            </form>
-                        </li>
-                    </ul>
+                        </ul>
+                    </div>
                 </li>
             {% endfor %}
         </ul>
@@ -51,6 +60,16 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const expandedProjects = JSON.parse(localStorage.getItem('expandedProjects')) || {};
+            Object.keys(expandedProjects).forEach(projectId => {
+                const tasksDiv = document.getElementById(`tasks-${projectId}`);
+                if (tasksDiv) {
+                    tasksDiv.style.display = expandedProjects[projectId] ? 'block' : 'none';
+                }
+            });
+        });
+
         document.getElementById('projectsForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const name = document.getElementById('projectNameInput').value;
@@ -98,6 +117,9 @@
             }).then(response => response.json())
             .then(data => {
                 if (data.message) {
+                    const expandedProjects = JSON.parse(localStorage.getItem('expandedProjects')) || {};
+                    expandedProjects[projectId] = true;
+                    localStorage.setItem('expandedProjects', JSON.stringify(expandedProjects));
                     location.reload();
                 } else {
                     alert(data.error || 'An error occurred');
@@ -116,6 +138,16 @@
                     alert(data.error || 'An error occurred');
                 }
             });
+        }
+
+        function toggleTasks(projectId) {
+            const tasksDiv = document.getElementById(`tasks-${projectId}`);
+            const isExpanded = tasksDiv.style.display === "block";
+            tasksDiv.style.display = isExpanded ? "none" : "block";
+
+            const expandedProjects = JSON.parse(localStorage.getItem('expandedProjects')) || {};
+            expandedProjects[projectId] = !isExpanded;
+            localStorage.setItem('expandedProjects', JSON.stringify(expandedProjects));
         }
     </script>
 </body>
