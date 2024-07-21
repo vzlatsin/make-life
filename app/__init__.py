@@ -81,10 +81,16 @@ def create_app(config_class='config.SQLiteConfig', check_postgres_status=True):
         from .main import main as main_blueprint
         from .inbox import inbox as inbox_blueprint
         from .projects import projects as projects_blueprint  # Import the projects blueprint
+        from .tasks import tasks as tasks_blueprint
+        print("Imported tasks blueprint")
 
         app.register_blueprint(main_blueprint)
         app.register_blueprint(inbox_blueprint, url_prefix='/inbox')
         app.register_blueprint(projects_blueprint, url_prefix='/projects')  # Register the projects blueprint
+        app.register_blueprint(tasks_blueprint, url_prefix='/tasks')
+        print("Registered tasks blueprint")
+        print(app.url_map)  # Add this line to print the registered routes
+
 
         print("Blueprints registered.")
 
