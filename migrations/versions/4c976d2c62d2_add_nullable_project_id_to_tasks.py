@@ -8,9 +8,14 @@ branch_labels = None
 depends_on = None
 
 def upgrade():
-    with op.batch_alter_table('task', schema=None) as batch_op:
-        batch_op.add_column(sa.Column('project_id', sa.Integer(), nullable=True))
-        batch_op.create_foreign_key('fk_task_project', 'project', ['project_id'], ['id'])
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    
+    # Ensure the column doesn't already exist
+    if 'project_id' not in [column['name'] for column in inspector.get_columns('task')]:
+        with op.batch_alter_table('task', schema=None) as batch_op:
+            batch_op.add_column(sa.Column('project_id', sa.Integer(), nullable=True))
+            batch_op.create_foreign_key('fk_task_project', 'project', ['project_id'], ['id'])
 
 def downgrade():
     with op.batch_alter_table('task', schema=None) as batch_op:
