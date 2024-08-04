@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -23,10 +25,36 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+<<<<<<< HEAD
       - name: Deploying to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
           heroku auth:token | docker login --username=_ --password-stdin registry.heroku.com
           heroku git:remote -a make-life-staging
+=======
+      - name: Configure Git user
+        run: |
+          git config --global user.email "vadim@example.com"
+          git config --global user.name "Vadim Zlatsin"
+
+      - name: Add Heroku remote
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/make-life-staging.git
+
+      - name: Fetch all branches and tags
+        run: |
+          git fetch --all
+
+      - name: Merge Heroku main with --allow-unrelated-histories
+        run: |
+          git merge heroku/main --allow-unrelated-histories
+
+      - name: Deploy to Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+>>>>>>> 6d1d6df846e6829c7db98e867bfb34ae9d04c9cd
           git push heroku main

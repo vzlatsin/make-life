@@ -45,3 +45,4 @@ instance/
 .env
 
 config_private.py
+latest.dump
