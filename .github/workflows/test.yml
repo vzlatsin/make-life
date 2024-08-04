@@ -44,10 +44,13 @@ jobs:
           pip install pytest
           pip install psycopg2-binary
 
+      - name: Set environment variables
+        run: |
+          echo "DATABASE_URL_TEST=postgresql://user:password@localhost:5432/test_db" >> $GITHUB_ENV
+
       - name: Run tests
         env:
           DATABASE_URL: postgresql://user:password@localhost:5432/test_db
-          SQLALCHEMY_DATABASE_URI: postgresql://user:password@localhost:5432/test_db
         run: |
           flask db upgrade
           pytest
