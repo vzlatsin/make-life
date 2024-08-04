@@ -29,4 +29,6 @@ jobs:
         run: |
           echo $HEROKU_API_KEY | heroku auth:token
           heroku git:remote -a make-life-staging
+          git config --global user.email "vzlatsin@gmail.com"
+          git config --global user.name "Vadim Zlatsin"
           git push heroku main
