@@ -47,6 +47,7 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: postgresql://user:password@localhost:5432/test_db
+          SQLALCHEMY_DATABASE_URI: postgresql://user:password@localhost:5432/test_db
         run: |
           flask db upgrade
           pytest
