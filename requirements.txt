@@ -11,3 +11,5 @@ Flask-Login==0.6.3
 Flask-Bootstrap==3.3.7.1
 Flask-Mail==0.10.0
 Flask-CORS==4.0.0
+
+python-dotenv
