@@ -25,10 +25,9 @@ def upgrade():
     if 'user' in inspector.get_table_names():
         if 'ix_user_email' in [index['name'] for index in inspector.get_indexes('user')]:
             op.drop_index('ix_user_email', table_name='user')
-
-    #op.drop_index('ix_user_email', table_name='user')
-    op.drop_index('ix_user_username', table_name='user')
-    op.drop_table('user')
+        if 'ix_user_username' in [index['name'] for index in inspector.get_indexes('user')]:
+            op.drop_index('ix_user_username', table_name='user')
+        op.drop_table('user')
     # ### end Alembic commands ###
 
 
