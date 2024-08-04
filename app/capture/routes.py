@@ -1,4 +1,4 @@
-from flask import request, jsonify, render_template
+from flask import request, jsonify, render_template, redirect, url_for, flash
 from app.capture import capture
 from app.capture.models import db, CaptureEntry
 from datetime import datetime
@@ -21,9 +21,17 @@ def add_capture_entry():
         db.session.add(entry)
         db.session.commit()
         print("Entry added to database")  # Debug print statement
-        return jsonify({'message': 'Entry added successfully!'}), 201
+        if request.is_json:
+            return jsonify({'message': 'Entry added successfully!'}), 201
+        else:
+            flash('Entry added successfully!')
+            return redirect(url_for('capture.get_capture_entries'))
     print("Content is required")  # Debug print statement
-    return jsonify({'error': 'Content is required!'}), 400
+    if request.is_json:
+        return jsonify({'error': 'Content is required!'}), 400
+    else:
+        flash('Content is required')
+        return redirect(url_for('capture.get_capture_entries'))
 
 @capture.route('/', methods=['GET'])
 def get_capture_entries():
