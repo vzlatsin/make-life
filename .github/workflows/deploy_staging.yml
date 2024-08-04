@@ -35,15 +35,14 @@ jobs:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
           git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/make-life-staging.git
-          git fetch heroku
+
+      - name: Fetch all branches and tags
+        run: |
+          git fetch --all
 
       - name: Merge Heroku main with --allow-unrelated-histories
         run: |
           git merge heroku/main --allow-unrelated-histories
-
-      - name: Unshallow the repository
-        run: |
-          git fetch --all --unshallow
 
       - name: Deploy to Heroku
         env:
