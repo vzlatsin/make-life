@@ -20,21 +20,63 @@ To implement and test changes in a development environment, followed by deployme
 
 #### 2. Make Changes for Environment Setup and Test Locally
 
-1. **Update configuration files and .env file**:
+1. **Update configuration files and `.env` file**:
    - Ensure your `.env` file has the correct development, testing, staging, and production database URLs.
+
+   ```plaintext
+   SECRET_KEY=your_secret_key
+   JWT_SECRET_KEY=your_jwt_secret_key
+   DATABASE_URL_DEV=sqlite:///C:/Users/vadim/Projects/make-life/dev.db
+   DATABASE_URL_TEST=sqlite:///C:/Users/vadim/Projects/make-life/test.db
+   DATABASE_URL_STAGING=postgresql://vadim:223Sebastopol@localhost/makelife_db
+   DATABASE_URL_PRODUCTION=postgresql://your_prod_db_username:your_prod_db_password@your_prod_db_host/your_prod_db_name
+   ```
 
 2. **Update `config.py` and `__init__.py`**:
    - Implement the environment-specific configurations.
 
-3. **Run the application locally**:
+3. **Update `conftest.py` to set the correct `PYTHONPATH`**:
+   - Ensure the `PYTHONPATH` is correctly set for pytest to locate the `app` module.
+   ```python
+   import sys
+   import os
+   sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+   import pytest
+   from app import create_app, db
+
+   @pytest.fixture
+   def client():
+       app = create_app()
+       app.config['TESTING'] = True
+       with app.test_client() as client:
+           yield client
+   ```
+
+4. **Ensure routes and tests are correctly aligned**:
+   - Adjust the test file to ensure it aligns with the routes.
+   ```python
+   def test_capture(client):
+       # Follow the redirect for the GET request
+       rv = client.get('/capture/', follow_redirects=True)
+       assert rv.status_code == 200
+       assert b'Capture' in rv.data  # Adjust this to match the expected content in the capture page
+
+       # Test the POST request to /capture
+       rv = client.post('/capture', data=dict(content='Test Message'), follow_redirects=True)
+       assert rv.status_code == 200
+       assert b'Test Message' in rv.data
+   ```
+
+5. **Run the application locally**:
    ```sh
-   export FLASK_ENV=development
+   set FLASK_ENV=development
    flask run
    ```
 
-4. **Run tests locally**:
+6. **Run tests locally**:
    ```sh
-   export FLASK_ENV=testing
+   set FLASK_ENV=testing
    pytest
    ```
 
@@ -54,13 +96,20 @@ To implement and test changes in a development environment, followed by deployme
 #### 4. Create and Configure a Staging Environment on Heroku
 
 1. **Create a new app on Heroku for staging**:
-   - Follow the steps to create a new Heroku app for staging.
+   - Use the Heroku Dashboard or CLI to create a new Heroku app for staging:
+     ```sh
+     heroku create make-life-staging
+     ```
 
-2. **Set the environment variables for your staging app**:
-   - Add the necessary environment variables for staging.
+2. **Add a PostgreSQL add-on to your staging app**:
+   ```sh
+   heroku addons:create heroku-postgresql:hobby-dev --app make-life-staging
+   ```
 
-3. **Create a user and database in the staging PostgreSQL database**:
-   - Follow the steps to create a new user and database in PostgreSQL for staging.
+3. **Set the environment variables for your staging app**:
+   ```sh
+   heroku config:set SECRET_KEY=your_secret_key JWT_SECRET_KEY=your_jwt_secret_key --app make-life-staging
+   ```
 
 #### 5. Deploy to Staging Environment
 
