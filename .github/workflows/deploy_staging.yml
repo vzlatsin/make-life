@@ -23,12 +23,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Deploying to Heroku
+      - name: Authenticate with Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          echo $HEROKU_API_KEY | heroku auth:token
+          echo "machine api.heroku.com login ${{ secrets.HEROKU_EMAIL }} password $HEROKU_API_KEY" > ~/.netrc
+          echo "machine git.heroku.com login ${{ secrets.HEROKU_EMAIL }} password $HEROKU_API_KEY" >> ~/.netrc
+          heroku auth:whoami
+
+      - name: Deploy to Heroku
+        run: |
           heroku git:remote -a make-life-staging
-          git config --global user.email "vzlatsin@gmail.com"
+          git config --global user.email "vadim@example.com"
           git config --global user.name "Vadim Zlatsin"
           git push heroku main
