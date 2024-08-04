@@ -1,4 +1,4 @@
-name: Deploy to Staging.
+name: Deploy to Staging
 
 on:
   push:
@@ -23,10 +23,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Deploy to Heroku
+      - name: Deploying to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: make-life-staging
         run: |
-          git remote add heroku https://git.heroku.com/${{ env.HEROKU_APP_NAME }}.git
+          echo $HEROKU_API_KEY | heroku auth:token
+          heroku git:remote -a make-life-staging
           git push heroku main
