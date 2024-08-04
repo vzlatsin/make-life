@@ -26,7 +26,7 @@ jobs:
       - name: Deploying to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-          HEROKU_APP_NAME: make-life-staging
         run: |
-          git remote add heroku https://git.heroku.com/${{ env.HEROKU_APP_NAME }}.git
+          heroku auth:token | docker login --username=_ --password-stdin registry.heroku.com
+          heroku git:remote -a make-life-staging
           git push heroku main
