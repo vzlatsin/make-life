@@ -23,18 +23,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Check for differences with Heroku remote
+      - name: Add Heroku remote
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
           git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/make-life-staging.git
           git fetch heroku
-          git diff heroku/main
 
-      - name: Merge Heroku remote changes
-        if: ${{ steps.differences.outputs.changes }} == 'true'
+      - name: Merge Heroku main with --allow-unrelated-histories
         run: |
-          git merge heroku/main
+          git merge heroku/main --allow-unrelated-histories
 
       - name: Deploy to Heroku
         env:
