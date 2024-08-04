@@ -25,14 +25,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-<<<<<<< HEAD
-      - name: Deploying to Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          heroku auth:token | docker login --username=_ --password-stdin registry.heroku.com
-          heroku git:remote -a make-life-staging
-=======
       - name: Configure Git user
         run: |
           git config --global user.email "vadim@example.com"
@@ -56,5 +48,4 @@ jobs:
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
->>>>>>> 6d1d6df846e6829c7db98e867bfb34ae9d04c9cd
           git push heroku main
