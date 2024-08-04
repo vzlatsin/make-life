@@ -23,6 +23,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Configure Git user
+        run: |
+          git config --global user.email "vadim@example.com"
+          git config --global user.name "Vadim Zlatsin"
+
       - name: Add Heroku remote
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
