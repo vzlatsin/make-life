@@ -23,19 +23,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Authenticate with Heroku
+      - name: Check for differences with Heroku remote
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          echo "machine api.heroku.com login _ password $HEROKU_API_KEY" > ~/.netrc
-          echo "machine git.heroku.com login _ password $HEROKU_API_KEY" >> ~/.netrc
-          heroku auth:whoami
+          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/make-life-staging.git
+          git fetch heroku
+          git diff heroku/main
+
+      - name: Merge Heroku remote changes
+        if: ${{ steps.differences.outputs.changes }} == 'true'
+        run: |
+          git merge heroku/main
 
       - name: Deploy to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/make-life-staging.git
-          git config --global user.email "vadim@example.com"
-          git config --global user.name "Vadim Zlatsin"
           git push heroku main
