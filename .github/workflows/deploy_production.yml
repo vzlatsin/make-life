@@ -39,9 +39,13 @@ jobs:
         run: |
           git fetch --all
 
+      - name: Ensure main branch is checked out
+        run: |
+          git checkout -b main origin/main || git checkout main
+
       - name: Merge Heroku main with --allow-unrelated-histories
         run: |
-          git merge heroku/main --allow-unrelated-histories
+          git merge heroku/main --allow-unrelated-histories || git merge --abort
 
       - name: Deploy to Heroku
         env:
