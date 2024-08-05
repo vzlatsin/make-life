@@ -47,3 +47,4 @@ instance/
 config_private.py
 # Backup of prod db
 latest.dump
+
