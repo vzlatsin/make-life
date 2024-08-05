@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -39,9 +41,10 @@ jobs:
 
       - name: Merge Heroku main with --allow-unrelated-histories
         run: |
-          git merge heroku/main --allow-unrelated-histories
+          git merge heroku/main --allow-unrelated-histories || git merge --abort
 
       - name: Deploy to Heroku
+        if: success()
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
