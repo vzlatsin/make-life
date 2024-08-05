@@ -43,9 +43,31 @@ jobs:
         run: |
           git checkout -b main origin/main || git checkout main
 
+      - name: Debug Branches
+        run: |
+          echo "Local branches:"
+          git branch
+          echo "Remote branches:"
+          git branch -r
+
       - name: Merge Heroku main with --allow-unrelated-histories
         run: |
           git merge heroku/main --allow-unrelated-histories || git merge --abort
+
+      - name: Debug Branch After Merge
+        run: |
+          echo "Branches after merge:"
+          git branch
+
+      - name: Sanity Check - Local Branches
+        run: |
+          echo "Sanity check - local branches:"
+          git branch
+
+      - name: Sanity Check - Remote Branches
+        run: |
+          echo "Sanity check - remote branches:"
+          git branch -r
 
       - name: Deploy to Heroku
         env:
