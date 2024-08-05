@@ -41,10 +41,10 @@ jobs:
 
       - name: Merge Heroku main with --allow-unrelated-histories
         run: |
-          git merge heroku/main --allow-unrelated-histories || git merge --abort
+          git merge heroku/main --allow-unrelated-histories
 
       - name: Deploy to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
-          git push heroku main:refs/heads/main
+          git push heroku main
