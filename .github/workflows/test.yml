@@ -54,12 +54,14 @@ jobs:
       - name: Set environment variables
         run: |
           echo "DATABASE_URL=postgresql://user:password@localhost:5432/test_db" >> $GITHUB_ENV
+          echo "DATABASE_URL_TEST=postgresql://user:password@localhost:5432/test_db" >> $GITHUB_ENV
           echo "FLASK_CONFIG=testing" >> $GITHUB_ENV
           echo "SQLALCHEMY_DATABASE_URI=postgresql://user:password@localhost:5432/test_db" >> $GITHUB_ENV
 
       - name: Print environment variables for debug
         run: |
           echo "DATABASE_URL=$DATABASE_URL"
+          echo "DATABASE_URL_TEST=$DATABASE_URL_TEST"
           echo "FLASK_CONFIG=$FLASK_CONFIG"
           echo "SQLALCHEMY_DATABASE_URI=$SQLALCHEMY_DATABASE_URI"
 
@@ -71,8 +73,8 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: postgresql://user:password@localhost:5432/test_db
+          DATABASE_URL_TEST: postgresql://user:password@localhost:5432/test_db
           FLASK_ENV: testing
-          SQLALCHEMY_DATABASE_URI: postgresql://user:password@localhost:5432/test_db
         run: |
           flask db upgrade
           Xvfb :99 -ac &
