@@ -1,19 +1,33 @@
-name: Deploy to Staging
+name: Run Tests
 
 on:
   push:
     branches:
       - main
+      - 'feature/**'
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -25,27 +39,34 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Configure Git user
+      - name: Set up ChromeDriver
         run: |
-          git config --global user.email "vadim@example.com"
-          git config --global user.name "Vadim Zlatsin"
+          sudo apt-get update
+          sudo apt-get install -y unzip xvfb libxi6 libgconf-2-4
+          latest_version=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)
+          wget -N https://chromedriver.storage.googleapis.com/$latest_version/chromedriver_linux64.zip -P ~/
+          unzip ~/chromedriver_linux64.zip -d ~/
+          rm ~/chromedriver_linux64.zip
+          sudo mv -f ~/chromedriver /usr/local/bin/chromedriver
+          sudo chown root:root /usr/local/bin/chromedriver
+          sudo chmod 0755 /usr/local/bin/chromedriver
 
-      - name: Add Heroku remote
+      - name: Set environment variables
+        run: |
+          echo "DATABASE_URL_TEST=postgresql://user:password@localhost:5432/test_db" >> $GITHUB_ENV
+          echo "FLASK_ENV=testing" >> $GITHUB_ENV
+
+      - name: Start Flask server
+        run: |
+          flask run &
+          sleep 5
+
+      - name: Run tests
         env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          DATABASE_URL: postgresql://user:password@localhost:5432/test_db
+          FLASK_ENV: testing
         run: |
-          git remote add heroku https://heroku:$HEROKU_API_KEY@git.heroku.com/make-life-staging.git
-
-      - name: Fetch all branches and tags
-        run: |
-          git fetch --all
-
-      - name: Merge Heroku main with --allow-unrelated-histories
-        run: |
-          git merge heroku/main --allow-unrelated-histories
-
-      - name: Deploy to Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        run: |
-          git push heroku main
+          flask db upgrade
+          Xvfb :99 -ac &
+          export DISPLAY=:99
+          pytest
