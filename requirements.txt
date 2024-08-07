@@ -14,3 +14,5 @@ Flask-CORS==4.0.0
 
 python-dotenv
 pytest
+selenium==4.11.2
+urllib3==2.0.4
