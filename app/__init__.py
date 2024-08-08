@@ -12,9 +12,9 @@ migrate = Migrate()
 
 def create_app(config_class=DevelopmentConfig):
     try:
-        # Ensure config_class defaults to DevelopmentConfig if FLASK_CONFIG is not set
-        env_config_name = os.getenv('FLASK_CONFIG', 'development')
-        print(f"Environment variable FLASK_CONFIG: {env_config_name}")
+        # Ensure config_class defaults to DevelopmentConfig if FLASK_ENV is not set
+        env_config_name = os.getenv('FLASK_ENV', 'development')
+        print(f"Environment variable FLASK_ENV: {env_config_name}")
 
         # Update config_class to use the correct configuration from the config dictionary
         config_class = config.get(env_config_name, config_class)
@@ -41,16 +41,6 @@ def create_app(config_class=DevelopmentConfig):
         db.init_app(app)
         print("Database initialized.")
 
-        with app.app_context():
-            try:
-                connection = db.engine.connect()
-                connection.close()
-                print("Database connection successful.")
-            except Exception as e:
-                print(f"Database connection failed: {e}")
-                print("Exiting application due to database connection failure.")
-                sys.exit(1)
-
         migrate.init_app(app, db)
         print("Migration initialized.")
 
@@ -75,3 +65,6 @@ def create_app(config_class=DevelopmentConfig):
     except Exception as e:
         print(f"Error during app initialization: {e}")
         raise
+
+if __name__ == "__main__":
+    app = create_app()

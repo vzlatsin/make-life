@@ -16,3 +16,4 @@ python-dotenv
 pytest
 selenium==4.11.2
 urllib3==2.0.4
+requests 

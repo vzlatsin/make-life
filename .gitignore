@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 app.db
 dev.db
+test.db
 
 
 # Distribution / packaging
@@ -49,4 +50,5 @@ instance/
 config_private.py
 # Backup of prod db
 latest.dump
+
 
